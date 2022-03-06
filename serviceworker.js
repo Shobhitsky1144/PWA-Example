@@ -1,6 +1,8 @@
+// Cache Version Name
 var staticCacheName = "pwa";
 var dynamicCacheName = "site-dynamic-v2";
-// var staticCacheName = "pwa";
+
+// Files to cache
 var assets = [
   "/",
   "/index.html",
@@ -8,28 +10,35 @@ var assets = [
   //   "/js/app.js",
   //   "/images/coffee1.jpg",
 ];
-// window.addEventListener("load", () => {
-//   registerSW();
-// });
 
-// Register the Service Worker
-// async function registerSW() {
-//   if ("serviceWorker" in navigator) {
-//     try {
-//       let swReg = await navigator.serviceWorker.register("serviceworker.js");
-//     } catch (e) {
-//       console.log("SW registration failed");
-//     }
-//   }
-// }
+// install
 self.addEventListener("install", function (e) {
   e.waitUntil(
     caches.open(staticCacheName).then(function (cache) {
-      return cache.addAll(assets);
+      return cache.addAll(assets).catch((err) => {
+        console.log("Error adding files to catch", err);
+      });
     })
   );
+  console.log("SW Installed");
+  self.skipWaiting();
 });
 
+// Activate event
+self.addEventListener("activate", (evt) => {
+  evt.waitUntil(
+    caches.keys().then((keys) => {
+      return Promise.all(
+        keys
+          .filter((key) => key !== staticCacheName && key !== dynamicCacheName)
+          .map((key) => caches.delete(key))
+      );
+    })
+  );
+  return self.clients.claim();
+});
+
+// fetch
 self.addEventListener("fetch", function (evt) {
   console.log(evt.request.url);
 
@@ -40,8 +49,7 @@ self.addEventListener("fetch", function (evt) {
         fetch(evt.request).then((fetchRes) => {
           return caches.open(dynamicCacheName).then((cache) => {
             cache.put(evt.request.url, fetchRes.clone());
-            // check cached items size
-            limitCacheSize(dynamicCacheName, 15);
+
             return fetchRes;
           });
         })
@@ -49,16 +57,11 @@ self.addEventListener("fetch", function (evt) {
     })
   );
 });
-// });
 
-// async function networkFirst(req) {
-//   const cache = await caches.open("dynamic-content");
-//   try {
-//     const res = await fetch(req);
-//     cache.put(req, res.clone());
-//     return res;
-//   } catch (err) {
-//     const cachedResponse = await cache.match(req);
-//     return cachedResponse || caches.match("./fallback.json");
-//   }
-// }
+//   Notification.requestPermission().then((result) => {
+//     if (result === "granted") {
+//       notification();
+//     } else {
+//       alert("You denied or dismissed permissions to notifications.");
+//     }
+//   });
