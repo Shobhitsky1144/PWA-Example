@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- Responsive -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,
+				initial-scale=1"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+    <!-- Title -->
+    <title>PWA Tutorial</title>
+
+    <!-- Meta Tags required for
+	Progressive Web App -->
+    <!-- ios support -->
+    <link rel="apple-touch-icon" href="images/icons/icon-192x192.png" />
+    <link rel="apple-touch-icon" href="images/icons/icon-512x512.png" />
+    <meta name="apple-mobile-web-app-status-bar" content="#aa7700" />
+    <meta name="theme-color" content="black" />
+
+    <!-- Manifest File link -->
+    <link rel="stylesheet" href="./css//style.css" />
+    <link rel="manifest" href="manifest.json" />
+  </head>
+
+  <body>
+    <h1 style="color: green">GeeksforGeeks mmn</h1>
+
+    <p class="score"></p>
+
+    <script>
+      var ScoreDiv = document.querySelector(".score");
+      window.addEventListener("load", () => {
+        registerSW();
+      });
+
+      // Register the Service Worker
+      async function registerSW() {
+        if ("serviceWorker" in navigator) {
+          try {
+            await navigator.serviceWorker.register("serviceworker.js");
+          } catch (e) {
+            console.log("SW registration failed");
+          }
+        }
+      }
+      //   / Requesting permission for Notifications after clicking on the button
+      // const button = document.getElementById('notifications');
+      // button.addEventListener('click', () => {
+
+      // });
+      //   Notification.requestPermission().then((result) => {
+      //     if (result === "granted") {
+      //       notification();
+      //     } else {
+      //       alert("You denied or dismissed permissions to notifications.");
+      //     }
+      //   });
+
+      function FakeApi() {
+        fetch("https://jsonplaceholder.typicode.com/todos/1")
+          .then((response) => response.json())
+          .then((json) => (ScoreDiv.innerHTML = json.title))
+          .catch((err) => console.log(err));
+      }
+      //   console.log("ab", ab);
+      FakeApi();
+    </script>
+  </body>
+</html>
