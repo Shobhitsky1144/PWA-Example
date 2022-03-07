@@ -28,21 +28,65 @@
 
   <body>
     <script src="/app.js"></script>
-    <h1 style="color: green">GeeksforGeeks mmn</h1>
-
+    <h1 style="color: green">PWA Web</h1>
     <p class="score"></p>
 
+    <script src="https://www.gstatic.com/firebasejs/8.4.2/firebase-app.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-messaging.js"></script>
     <script>
       var ScoreDiv = document.querySelector(".score");
+      var firebaseConfig = {
+        apiKey: "AIzaSyC1kLG4SBqAleoXyEmEZE4ZzV7DE4BpZAU",
+        projectId: "pwa-example-d0cc8",
+        messagingSenderId: "587410722519",
+        appId: "1:587410722519:web:638dbcb36386843d55ea92",
+      };
+      firebase.initializeApp(firebaseConfig);
 
+      var messaging = firebase.messaging();
+
+      messaging
+        .requestPermission()
+        .then(function () {
+          console.log("Notification permission granted.");
+
+          return messaging.getToken();
+        })
+        .then(function (token) {
+          console.log("token", token);
+        })
+        .catch(function (err) {
+          console.log("Unable to get permission to notify.", err);
+        });
+
+      // messaging.onMessage(function (payload) {
+      //   console.log(
+      //     "[firebase-messaging-sw.js] Received background message ",
+      //     payload
+      //   );
+      //   // Customize notification here
+      //   var notificationTitle = "Background Message Title";
+      //   var notificationOptions = {
+      //     body: "Background Message body.",
+      //     icon: "/images/192x192 linkedin.png",
+      //   };
+
+      //   return self.registration.showNotification(
+      //     notificationTitle,
+      //     notificationOptions
+      //   );
+      // });
+      var ScoreDiv = document.querySelector(".score");
       function FakeApi() {
         fetch("https://jsonplaceholder.typicode.com/todos/1")
           .then((response) => response.json())
           .then((json) => (ScoreDiv.innerHTML = json.title))
           .catch((err) => console.log(err));
       }
-
       FakeApi();
     </script>
+
+    <script src="/firebase-messaging-sw.js"></script>
   </body>
 </html>

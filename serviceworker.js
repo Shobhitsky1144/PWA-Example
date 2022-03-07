@@ -7,6 +7,7 @@ var assets = [
   "/",
   "/index.html",
   "/css/style.css",
+  "/firebase-messaging-sw.js",
   //   "/js/app.js",
   //   "/images/coffee1.jpg",
 ];
@@ -40,7 +41,7 @@ self.addEventListener("activate", (evt) => {
 
 // fetch
 self.addEventListener("fetch", function (evt) {
-  console.log(evt.request.url);
+  // console.log(evt.request.url);
 
   evt.respondWith(
     caches.match(evt.request).then((cacheRes) => {
